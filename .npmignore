@@ -1,0 +1,16 @@
+src/
+test/
+docs/
+assets/
+.github/
+.husky/
+coverage/
+node_modules/
+*.tsbuildinfo
+tsconfig*.json
+eslint.config.js
+vitest.config.ts
+.prettierrc.json
+.prettierignore
+.editorconfig
+.gitignore

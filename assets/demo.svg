@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 400" font-family="SFMono-Regular,Consolas,Liberation Mono,Menlo,monospace" font-size="14">
+  <rect width="760" height="400" rx="10" fill="#1e1e2e"/>
+  <rect width="760" height="30" rx="10" fill="#181825"/>
+  <rect y="20" width="760" height="10" fill="#181825"/>
+  <circle cx="20" cy="15" r="6" fill="#f38ba8"/>
+  <circle cx="42" cy="15" r="6" fill="#f9e2af"/>
+  <circle cx="64" cy="15" r="6" fill="#a6e3a1"/>
+  <text x="380" y="20" fill="#6c7086" text-anchor="middle" font-size="12">claude-voice</text>
+
+  <!-- rounded header box -->
+  <rect x="20" y="46" width="600" height="30" rx="6" fill="none" stroke="#cba6f7" stroke-width="1"/>
+  <text x="34" y="66" fill="#cba6f7" font-weight="bold">🎙  claude-voice</text>
+  <text x="176" y="66" fill="#6c7086">· groq → claude(opus) → sarvam:anushka</text>
+
+  <!-- transcript -->
+  <text x="20" y="104" fill="#89dceb" font-weight="bold">You <tspan fill="#6c7086" font-weight="normal">· 310ms</tspan></text>
+  <text x="20" y="124" fill="#cdd6f4">Create a FastAPI RBAC system.</text>
+
+  <text x="20" y="156" fill="#cba6f7" font-weight="bold">Claude <tspan fill="#6c7086" font-weight="normal">· 2.4s</tspan></text>
+  <text x="20" y="176" fill="#cdd6f4">Sure — let's design a role-based access control layer.</text>
+  <text x="20" y="196" fill="#cdd6f4">I'll start with the models, then a dependency guard…</text>
+
+  <!-- live streaming -->
+  <text x="20" y="232" fill="#cba6f7" font-weight="bold">Claude</text>
+  <text x="20" y="252" fill="#cdd6f4">Next, we wire the permission check into each route<tspan fill="#585b70">▋</tspan></text>
+
+  <!-- status bar -->
+  <line x1="20" y1="336" x2="740" y2="336" stroke="#313244" stroke-width="1"/>
+  <text x="20" y="360" fill="#cba6f7">⠹ 🧠  Thinking… 2.6s</text>
+  <text x="740" y="360" fill="#6c7086" text-anchor="end">SPACE interrupt · t type · q quit</text>
+</svg>

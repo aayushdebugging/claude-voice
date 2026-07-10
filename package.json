@@ -1,0 +1,109 @@
+{
+  "name": "@aayushdebugging/claude-voice",
+  "version": "0.1.0",
+  "description": "Real-time voice conversations for the Claude CLI — talk to Claude naturally from your terminal.",
+  "keywords": [
+    "claude",
+    "claude-code",
+    "voice",
+    "speech-to-text",
+    "text-to-speech",
+    "stt",
+    "tts",
+    "whisper",
+    "groq",
+    "elevenlabs",
+    "cli",
+    "ai",
+    "assistant",
+    "voice-assistant"
+  ],
+  "homepage": "https://github.com/claude-voice/claude-voice#readme",
+  "bugs": {
+    "url": "https://github.com/claude-voice/claude-voice/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/claude-voice/claude-voice.git"
+  },
+  "license": "MIT",
+  "author": "claude-voice contributors",
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "bin": {
+    "claude-voice": "./dist/cli/index.js"
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json && chmod +x dist/cli/index.js",
+    "dev": "tsx src/cli/index.ts",
+    "start": "node dist/cli/index.js",
+    "clean": "rimraf dist coverage",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint . --max-warnings 0",
+    "lint:fix": "eslint . --fix",
+    "format": "prettier --write \"**/*.{ts,js,json}\"",
+    "format:check": "prettier --check \"**/*.{ts,js,json}\"",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
+    "prepublishOnly": "npm run clean && npm run build",
+    "prepare": "husky || true"
+  },
+  "dependencies": {
+    "chalk": "^5.3.0",
+    "commander": "^12.1.0",
+    "ink": "^5.1.0",
+    "ora": "^8.1.0",
+    "qrcode-terminal": "^0.12.0",
+    "react": "^18.3.1",
+    "selfsigned": "^2.4.1",
+    "ws": "^8.21.0"
+  },
+  "optionalDependencies": {
+    "node-record-lpcm16": "^1.0.1",
+    "speaker": "^0.5.5"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.11.0",
+    "@types/node": "^20.14.0",
+    "@types/react": "^18.3.12",
+    "@types/ws": "^8.18.1",
+    "@typescript-eslint/eslint-plugin": "^8.8.0",
+    "@typescript-eslint/parser": "^8.8.0",
+    "@vitest/coverage-v8": "^2.1.2",
+    "eslint": "^9.11.0",
+    "eslint-config-prettier": "^9.1.0",
+    "globals": "^15.15.0",
+    "husky": "^9.1.6",
+    "lint-staged": "^15.2.10",
+    "prettier": "^3.3.3",
+    "rimraf": "^6.0.1",
+    "tsx": "^4.19.1",
+    "typescript": "^5.6.2",
+    "vitest": "^2.1.2"
+  },
+  "lint-staged": {
+    "*.{ts,js}": [
+      "eslint --fix",
+      "prettier --write"
+    ],
+    "*.json": [
+      "prettier --write"
+    ]
+  }
+}

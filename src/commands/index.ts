@@ -1,0 +1,13 @@
+export { runCommand } from './run.js';
+export { sayCommand } from './say.js';
+export { serveCommand } from './serve.js';
+export type { ServeCommandOptions } from './serve.js';
+export { localCommand } from './local.js';
+export type { LocalCommandOptions } from './local.js';
+export { doctorCommand } from './doctor.js';
+export { configCommand } from './config.js';
+export type { ConfigCommandOptions } from './config.js';
+export { updateCommand } from './update.js';
+export type { UpdateCommandOptions } from './update.js';
+export { versionCommand } from './version.js';
+export { buildChecks } from './diagnostics.js';
