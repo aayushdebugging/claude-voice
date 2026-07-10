@@ -156,23 +156,54 @@ claude-voice version         # what you're on now
 Run entirely offline with open-source models — no cloud, no keys, $0:
 
 - **STT:** [whisper.cpp](https://github.com/ggml-org/whisper.cpp) (Metal-accelerated on Apple Silicon)
-- **TTS:** [Kokoro](https://github.com/hexgrad/kokoro) via any OpenAI-compatible server (e.g. `kokoro-fastapi`)
+- **TTS:** [Kokoro](https://github.com/hexgrad/kokoro) (`kokoro-onnx`, CPU, no PyTorch)
+
+It's a few one-time steps. **`claude-voice local` downloads the models and reports
+status; you install the native runtimes once and start the two local servers**
+(npm can't install compiled binaries, and the servers are long-running, so those
+stay in your hands).
+
+**1. Install the runtimes** (one-time — native/Python, not from npm):
+
+| Platform | Command |
+| --- | --- |
+| macOS | `brew install sox ffmpeg whisper-cpp uv` |
+| Debian/Ubuntu | `sudo apt-get install sox ffmpeg` · then [build whisper.cpp](https://github.com/ggml-org/whisper.cpp#quick-start) and [install `uv`](https://docs.astral.sh/uv/getting-started/installation/) |
+
+**2. Download the models + check what's needed:**
 
 ```bash
-claude-voice local     # checks status + AUTO-DOWNLOADS the whisper model, prints setup commands
+claude-voice local
+```
+This **auto-downloads the whisper model** (~150 MB, with a progress bar), writes the
+Kokoro server script to `~/.claude-voice/kokoro-server.py`, and prints a ✔/✖ status
+report with the exact command for anything still missing. (`--no-download` prints the
+model's `curl` command instead of fetching it.)
+
+**3. Start the two servers** — each in its own terminal, since they keep running:
+
+```bash
+# speech-to-text (whisper.cpp)
+whisper-server -m ~/.claude-voice/models/ggml-base.en.bin --host 127.0.0.1 --port 8081
+
+# text-to-speech (Kokoro — downloads its ~340 MB model on first run)
+uv run --with kokoro-onnx --with numpy python ~/.claude-voice/kokoro-server.py --port 8880
 ```
 
-`claude-voice local` fetches the whisper.cpp model (~150 MB) for you with a progress bar; Kokoro downloads its own model on first run. Pass `--no-download` to just print the commands instead. (You still install the runtimes once — `brew install whisper-cpp uv` — since those are native/Python, not npm.)
-
-Once both local servers are up:
+**4. Talk, pointed at the local stack:**
 
 ```bash
-claude-voice --stt whispercpp --tts kokoro
-# or make it the default:
+claude-voice --local
+# …or make it the permanent default:
 claude-voice config --set stt=whispercpp --set tts=kokoro --set voice=af_heart
 ```
 
-Any OpenAI-compatible STT/TTS server works too (point `providers.whispercpp.baseUrl` / `providers.kokoro.baseUrl` at it).
+> Re-run `claude-voice local` any time to see live status (which servers are up, which
+> models exist). If you see `whisper.cpp request failed: fetch failed`, a server just
+> isn't running yet — start it with step 3.
+
+Any OpenAI-compatible STT/TTS server works too (point `providers.whispercpp.baseUrl` /
+`providers.kokoro.baseUrl` at it).
 
 ## 📱 Talk from your phone (remote)
 
@@ -281,7 +312,9 @@ to write custom STT/TTS providers and plugins.
 Run `claude-voice doctor` first — it pinpoints most issues. Common ones:
 
 - **"Claude CLI not found"** — install it from <https://claude.com/claude-code> and ensure `claude` is on your `PATH`.
-- **"recording backend not found"** — install `sox` (see the table above).
+- **"recording backend not found"** / **"Microphone capture needs sox"** — install `sox` (`brew install sox`; see the table above).
+- **"No microphone audio detected"** — either `sox` isn't installed, or your terminal lacks mic permission. Install `sox`, then grant access under **System Settings → Privacy & Security → Microphone** (to the *terminal app you launched from* — e.g. Terminal, iTerm, or VS Code) and restart it.
+- **"whisper.cpp request failed: fetch failed"** (or the same for `kokoro`) — the local STT/TTS **server isn't running**. Start it (see [Fully local & free](#-fully-local--free-no-api-keys), step 3) or run `claude-voice local` to see which servers are up. `fetch failed` = nothing is listening on the configured port.
 - **"speaker module unavailable"** — the optional native audio module failed to build; install your platform's build tools and reinstall. `--no-speak` works meanwhile.
 - **401 from a provider** — double-check the corresponding `*_API_KEY`.
 

@@ -130,6 +130,33 @@ claude-voice
 
 ---
 
+## Fully local models (offline, no API keys)
+
+Instead of cloud providers you can run everything on your machine with
+[whisper.cpp](https://github.com/ggml-org/whisper.cpp) (STT) and
+[Kokoro](https://github.com/hexgrad/kokoro) (TTS). `claude-voice local` downloads
+the models and reports status; you install the runtimes once and start the two
+servers.
+
+```bash
+# 1. one-time native installs (npm can't ship these)
+brew install sox ffmpeg whisper-cpp uv       # macOS
+
+# 2. download the models + see what's missing (auto-fetches the whisper model)
+claude-voice local
+
+# 3. start the servers (each in its own terminal — they keep running)
+whisper-server -m ~/.claude-voice/models/ggml-base.en.bin --host 127.0.0.1 --port 8081
+uv run --with kokoro-onnx --with numpy python ~/.claude-voice/kokoro-server.py --port 8880
+
+# 4. use the local stack
+claude-voice --local
+```
+
+`whisper.cpp request failed: fetch failed` just means a server isn't running yet
+(step 3). Re-run `claude-voice local` any time to check what's up. See the
+[README](../README.md#-fully-local--free-no-api-keys) for the full walkthrough.
+
 ## Installing from source
 
 ```bash
