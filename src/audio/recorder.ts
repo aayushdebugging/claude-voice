@@ -1,3 +1,4 @@
+import { spawn, type ChildProcess } from 'node:child_process';
 import { Readable } from 'node:stream';
 
 import { AudioError } from '../utils/errors.js';
@@ -52,6 +53,37 @@ interface RecorderModule {
 interface RecordingInstance {
   stream(): Readable;
   stop(): void;
+  /** The underlying child process, when the backend exposes it. */
+  process?: ChildProcess;
+}
+
+const cmdAvailable = new Map<string, boolean>();
+
+/** True if a command resolves on PATH (cached per command name). */
+async function hasCommand(cmd: string): Promise<boolean> {
+  const cached = cmdAvailable.get(cmd);
+  if (cached !== undefined) return cached;
+  const ok = await new Promise<boolean>((resolve) => {
+    try {
+      const finder = process.platform === 'win32' ? 'where' : 'which';
+      const child = spawn(finder, [cmd]);
+      child.on('error', () => resolve(false));
+      child.on('close', (code) => resolve(code === 0));
+    } catch {
+      resolve(false);
+    }
+  });
+  cmdAvailable.set(cmd, ok);
+  return ok;
+}
+
+/** Platform-specific hint for installing a missing recorder backend. */
+function recorderHint(): string {
+  if (process.platform === 'darwin') return 'Install it with: brew install sox';
+  if (process.platform === 'linux') {
+    return 'Install it with: sudo apt-get install sox libsox-fmt-all alsa-utils';
+  }
+  return 'Install SoX from https://sourceforge.net/projects/sox/ and add it to your PATH.';
 }
 
 let cachedRecorder: RecorderModule | null | undefined;
@@ -96,6 +128,11 @@ export class MicRecorder {
     return (await loadRecorder()) !== null;
   }
 
+  /** True if the recorder backend binary (sox/rec/arecord) is on PATH. */
+  static programAvailable(program: string = defaultProgram()): Promise<boolean> {
+    return hasCommand(program);
+  }
+
   private async open(
     options: RecordOptions,
   ): Promise<{ recording: RecordingInstance; stream: Readable }> {
@@ -103,7 +140,16 @@ export class MicRecorder {
     if (!recorder) {
       throw new AudioError(
         'Microphone capture unavailable: "node-record-lpcm16" is not installed.',
-        'Install a recorder backend (e.g. `brew install sox`) and see `claude-voice doctor`.',
+        'Reinstall claude-voice, then run `claude-voice doctor`.',
+      );
+    }
+    const program = options.program ?? defaultProgram();
+    // Verify the backend binary exists BEFORE spawning: a missing one (e.g. sox)
+    // emits an unhandled 'error' on the child process that would crash the app.
+    if (!(await hasCommand(program))) {
+      throw new AudioError(
+        `Microphone capture needs "${program}", which wasn't found on your PATH.`,
+        recorderHint(),
       );
     }
     let recording: RecordingInstance;
@@ -112,7 +158,7 @@ export class MicRecorder {
         sampleRate: options.sampleRate,
         channels: options.channels ?? 1,
         audioType: 'raw',
-        recorder: options.program ?? defaultProgram(),
+        recorder: program,
         device: options.device,
         // Let claude-voice handle silence/endpointing itself.
         thresholdStart: 0,
@@ -122,6 +168,9 @@ export class MicRecorder {
     } catch (err) {
       throw new AudioError(`Failed to start microphone: ${(err as Error).message}`);
     }
+    // Defensive: keep an async backend spawn error from becoming an unhandled
+    // 'error' event that crashes the process. Stream errors are still reported.
+    recording.process?.on('error', (err) => logger.debug('recorder process error:', err));
     return { recording, stream: recording.stream() };
   }
 

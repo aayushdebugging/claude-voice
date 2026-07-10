@@ -9,7 +9,7 @@ import {
 } from '../config/index.js';
 import { createBus, VoiceEvent, type VoiceBus } from '../events/index.js';
 import { createSession, type Session } from '../core/index.js';
-import { resolveAudioSink } from '../audio/index.js';
+import { MicRecorder, resolveAudioSink } from '../audio/index.js';
 import { PluginManager, transcriptPlugin } from '../plugins/index.js';
 import { TerminalUI, printBanner } from '../cli/ui.js';
 import { setupKeyboard } from '../cli/keyboard.js';
@@ -79,6 +79,13 @@ export async function runCommand(overrides: PartialConfig = {}): Promise<number>
   const output = !config.autoSpeak ? 'text-only' : `${config.tts}:${config.voice}`;
   const subtitle = `${config.stt} → claude(${config.model}) → ${output}`;
   const notices: string[] = [];
+  if (!(await MicRecorder.programAvailable())) {
+    notices.push(
+      process.platform === 'darwin'
+        ? "Microphone backend not found — talking won't work until you install it: brew install sox"
+        : "Microphone backend not found — talking won't work. Install sox (macOS/Win) or arecord (Linux).",
+    );
+  }
   if (config.autoSpeak && backend === 'none') {
     notices.push(
       'No audio output found — responses will be text-only. Install sox: brew install sox',

@@ -92,6 +92,11 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Fixed
 
+- **No longer crashes when the microphone backend (`sox`) is missing.** A missing
+  `sox` used to emit an unhandled `ENOENT` on the recorder's child process and
+  take the whole app down. The backend binary is now checked before spawning, so
+  you get a friendly "install sox" message (plus a startup notice) instead of a
+  stack trace.
 - **Streaming speech no longer gaps at paragraph breaks.** A short playback
   prebuffer (~0.8s of audio) is built before speech starts, so a brief pause in
   generation at a blank-line/paragraph boundary doesn't drain the stream and
