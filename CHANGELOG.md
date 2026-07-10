@@ -92,6 +92,10 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Fixed
 
+- **`claude-voice update` targets the correct package.** It now reads the package
+  name from `package.json` (and handles scoped registry URLs) instead of a
+  hard-coded `claude-voice`, so after the scoped rename it no longer checks or
+  installs an unrelated `claude-voice` package. New `getPackageName()`.
 - **No longer crashes when the microphone backend (`sox`) is missing.** A missing
   `sox` used to emit an unhandled `ENOENT` on the recorder's child process and
   take the whole app down. The backend binary is now checked before spawning, so

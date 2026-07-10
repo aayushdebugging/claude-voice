@@ -3,28 +3,28 @@ import { spawn } from 'node:child_process';
 import chalk from 'chalk';
 import ora from 'ora';
 
-import { getVersion } from '../utils/version.js';
-
-const PACKAGE = 'claude-voice';
+import { getVersion, getPackageName } from '../utils/version.js';
 
 export interface UpdateCommandOptions {
   /** Only report whether an update is available; don't install. */
   check?: boolean;
 }
 
-/** Fetch the latest published version from the npm registry. */
-async function fetchLatest(): Promise<string | null> {
+/** Fetch the latest published version of `pkg` from the npm registry. */
+async function fetchLatest(pkg: string): Promise<string | null> {
   try {
     const controller = new AbortController();
     const timer = setTimeout(() => controller.abort(), 8000);
-    const res = await fetch(`https://registry.npmjs.org/${PACKAGE}/latest`, {
+    // Scoped names need the `/` encoded; read `dist-tags.latest` from the
+    // packument (works for both scoped and unscoped packages).
+    const res = await fetch(`https://registry.npmjs.org/${pkg.replace('/', '%2f')}`, {
       signal: controller.signal,
       headers: { Accept: 'application/json' },
     });
     clearTimeout(timer);
     if (!res.ok) return null;
-    const data = (await res.json()) as { version?: string };
-    return data.version ?? null;
+    const data = (await res.json()) as { 'dist-tags'?: { latest?: string } };
+    return data['dist-tags']?.latest ?? null;
   } catch {
     return null;
   }
@@ -43,8 +43,9 @@ function isNewer(a: string, b: string): boolean {
 /** `claude-voice update` — check for and install the latest version. */
 export async function updateCommand(options: UpdateCommandOptions = {}): Promise<number> {
   const current = await getVersion();
+  const pkg = await getPackageName();
   const spinner = ora({ text: 'Checking for updates…', stream: process.stdout }).start();
-  const latest = await fetchLatest();
+  const latest = await fetchLatest(pkg);
   spinner.stop();
 
   if (!latest) {
@@ -68,9 +69,9 @@ export async function updateCommand(options: UpdateCommandOptions = {}): Promise
     return 0;
   }
 
-  process.stdout.write(`Installing ${chalk.cyan(`${PACKAGE}@${latest}`)}…\n`);
+  process.stdout.write(`Installing ${chalk.cyan(`${pkg}@${latest}`)}…\n`);
   const code = await new Promise<number>((resolve) => {
-    const child = spawn('npm', ['install', '-g', `${PACKAGE}@latest`], { stdio: 'inherit' });
+    const child = spawn('npm', ['install', '-g', `${pkg}@latest`], { stdio: 'inherit' });
     child.on('error', () => resolve(1));
     child.on('close', (c) => resolve(c ?? 0));
   });
@@ -79,7 +80,7 @@ export async function updateCommand(options: UpdateCommandOptions = {}): Promise
     process.stdout.write(`${chalk.green('✔')} Updated to v${latest}.\n`);
   } else {
     process.stderr.write(
-      `${chalk.red('✖')} Update failed. Try manually: ${chalk.cyan(`npm install -g ${PACKAGE}@latest`)}\n`,
+      `${chalk.red('✖')} Update failed. Try manually: ${chalk.cyan(`npm install -g ${pkg}@latest`)}\n`,
     );
   }
   return code;
