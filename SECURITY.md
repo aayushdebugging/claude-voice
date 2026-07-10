@@ -10,7 +10,7 @@ how to run it safely.
 
 Please **do not** open a public issue for security problems. Email the
 maintainers at **security@claude-voice.dev** (or open a private
-[GitHub security advisory](https://github.com/claude-voice/claude-voice/security/advisories/new)).
+[GitHub security advisory](https://github.com/aayushdebugging/claude-voice/security/advisories/new)).
 We aim to acknowledge reports within 72 hours and to ship a fix or mitigation for
 confirmed high-severity issues promptly. Please include reproduction steps and
 the version (`claude-voice version`).

@@ -7,7 +7,7 @@ of all sizes are welcome.
 ## Development setup
 
 ```bash
-git clone https://github.com/claude-voice/claude-voice.git
+git clone https://github.com/aayushdebugging/claude-voice.git
 cd claude-voice
 npm install
 ```

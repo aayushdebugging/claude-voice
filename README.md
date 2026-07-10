@@ -1,12 +1,12 @@
 <div align="center">
 
-# 🎙️ claude-voice
+# 🎙️ Claude Voice AI
 
 **Real-time voice conversations for the [Claude CLI](https://claude.com/claude-code).**
 
 Talk to Claude naturally from your terminal — speak, and hear it think back.
 
-[![CI](https://github.com/claude-voice/claude-voice/actions/workflows/ci.yml/badge.svg)](https://github.com/claude-voice/claude-voice/actions/workflows/ci.yml)
+[![CI](https://github.com/aayushdebugging/claude-voice/actions/workflows/ci.yml/badge.svg)](https://github.com/aayushdebugging/claude-voice/actions/workflows/ci.yml)
 [![npm version](https://img.shields.io/npm/v/@aayushdebugging/claude-voice.svg)](https://www.npmjs.com/package/@aayushdebugging/claude-voice)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE)
 [![Node](https://img.shields.io/badge/node-%3E%3D18-brightgreen.svg)](https://nodejs.org)
@@ -128,6 +128,28 @@ While Claude generates, the status bar shows a live **word count and words/sec**
 | `claude-voice doctor` | Diagnose your setup (CLI, keys, mic, speaker, network). |
 | `claude-voice update` | Check for and install the latest version. |
 | `claude-voice version` | Print the installed version. |
+
+## ⬆️ Updating
+
+Already installed it? Upgrade to the latest published version:
+
+```bash
+# global install:
+npm install -g @aayushdebugging/claude-voice@latest
+
+# or, if it's a project dependency:
+npm update @aayushdebugging/claude-voice
+```
+
+From **v0.1.2** onward you can also self-update in place:
+
+```bash
+claude-voice update          # checks npm and installs the newest version
+claude-voice update --check  # just check, don't install
+claude-voice version         # what you're on now
+```
+
+> Note: `npm update` takes a bare package name (no `@latest`); use `npm install …@latest` to force the newest, or `npm update …` to move within your saved range.
 
 ## 🔒 Fully local & free (no API keys)
 

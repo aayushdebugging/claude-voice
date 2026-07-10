@@ -135,5 +135,5 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - `config`, `doctor`, `update`, `chat`, and `version` commands.
 - Programmatic library API for embedding voice in other tools.
 
-[Unreleased]: https://github.com/claude-voice/claude-voice/compare/v0.1.0...HEAD
-[0.1.0]: https://github.com/claude-voice/claude-voice/releases/tag/v0.1.0
+[Unreleased]: https://github.com/aayushdebugging/claude-voice/compare/v0.1.0...HEAD
+[0.1.0]: https://github.com/aayushdebugging/claude-voice/releases/tag/v0.1.0

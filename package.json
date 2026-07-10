@@ -18,16 +18,16 @@
     "assistant",
     "voice-assistant"
   ],
-  "homepage": "https://github.com/claude-voice/claude-voice#readme",
+  "homepage": "https://github.com/aayushdebugging/claude-voice#readme",
   "bugs": {
-    "url": "https://github.com/claude-voice/claude-voice/issues"
+    "url": "https://github.com/aayushdebugging/claude-voice/issues"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/claude-voice/claude-voice.git"
+    "url": "git+https://github.com/aayushdebugging/claude-voice.git"
   },
   "license": "MIT",
-  "author": "claude-voice contributors",
+  "author": "Aayush Kumar (aayushdebugging)",
   "type": "module",
   "exports": {
     ".": {
