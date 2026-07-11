@@ -51,14 +51,17 @@ export class Conversation {
 
   constructor(deps: ConversationDeps) {
     this.deps = deps;
-    // Clause-level chunking so speech starts after the first clause (a comma),
-    // not the first full sentence — much lower latency for streamed TTS.
-    this.parser = new SentenceParser({
-      minLength: 2,
-      softBoundaries: true,
-      softMinLength: 18,
-      maxLength: 180,
-    });
+    // Default: chunk at *sentence* boundaries and let the TTS engine handle
+    // internal punctuation (commas, dashes, colons) with its own natural
+    // prosody. Clause-level splitting makes engines like Kokoro pad every
+    // fragment with ~180ms of trailing silence — an audible stop at each comma
+    // or dash. `fastSpeech` opts into clause chunking for the lowest first-word
+    // latency, accepting choppier speech.
+    this.parser = new SentenceParser(
+      deps.config.fastSpeech
+        ? { minLength: 2, softBoundaries: true, softMinLength: 18, maxLength: 180 }
+        : { minLength: 2, softBoundaries: false, maxLength: 400 },
+    );
   }
 
   get currentState(): ConversationState {

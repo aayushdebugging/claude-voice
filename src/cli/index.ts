@@ -29,6 +29,7 @@ interface GlobalOptions {
   continuous?: boolean;
   speak?: boolean;
   stream?: boolean;
+  fastSpeech?: boolean;
   logLevel?: LogLevel;
 }
 
@@ -56,6 +57,9 @@ function toOverrides(opts: GlobalOptions): PartialConfig {
   if (opts.speak === false) overrides.autoSpeak = false;
   // `--no-stream` disables streaming speech (speak the whole reply at once).
   if (opts.stream === false) overrides.streamSpeech = false;
+  // `--fast-speech` chunks at clause boundaries for the lowest latency, at the
+  // cost of choppier prosody (see Config.fastSpeech).
+  if (opts.fastSpeech) overrides.fastSpeech = true;
   return overrides;
 }
 
@@ -86,6 +90,10 @@ function withVoiceOptions(command: Command): Command {
     .option('--continuous', 'continuous listening mode (default)')
     .option('--no-speak', 'disable spoken responses (text only)')
     .option('--no-stream', 'speak the whole reply at once instead of as it streams')
+    .option(
+      '--fast-speech',
+      'lowest-latency speech (start after the first clause; may sound choppier)',
+    )
     .addOption(
       new Option('--log-level <level>', 'log verbosity').choices([
         'debug',

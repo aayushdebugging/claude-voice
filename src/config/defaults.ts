@@ -27,6 +27,7 @@ export const DEFAULT_CONFIG: VoiceConfig = {
   pushToTalk: false,
   autoSpeak: true,
   streamSpeech: true,
+  fastSpeech: false,
   voicePrompt: DEFAULT_VOICE_PROMPT,
   language: 'auto',
   speechRate: 1.0,

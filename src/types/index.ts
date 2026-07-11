@@ -39,6 +39,15 @@ export interface VoiceConfig {
    */
   streamSpeech: boolean;
   /**
+   * When true, chunk speech at *clause* boundaries (commas, dashes, colons) for
+   * the lowest first-word latency. Off by default: replies are chunked at
+   * *sentence* boundaries so the TTS engine handles internal punctuation with
+   * its own natural prosody. Clause-splitting makes engines like Kokoro pad each
+   * fragment with ~180ms of trailing silence — an audible stop at every comma or
+   * dash — so it trades quality for latency.
+   */
+  fastSpeech: boolean;
+  /**
    * System prompt appended to Claude (via `--append-system-prompt`) that steers
    * replies to be voice-friendly — spoken like an explanation, not a document.
    * Empty string disables it.

@@ -23,12 +23,17 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Added
 
-- **Lower-latency streamed speech (clause-level chunking).** Speech now starts
-  after the first *clause* (a comma) instead of the first full sentence — the
-  sentence parser gained an opt-in `softBoundaries` mode (`,` `;` `:` `—`) with a
-  `softMinLength` and a `maxLength` word-boundary safety flush, and the playback
-  pre-buffer was cut from ~0.8s to ~0.25s. Generation, synthesis, and playback
-  run fully in parallel, so first audio lands a fraction of a second in.
+- **Natural streamed speech (sentence-level chunking by default).** Replies are
+  streamed to the TTS engine one *sentence* at a time so the engine handles
+  internal punctuation (commas, dashes, colons) with its own prosody — because
+  splitting on those marks makes engines like Kokoro pad every fragment with
+  ~180ms of trailing silence, i.e. an audible stop at each comma/dash (measured:
+  a clause-split reply carried ~900ms of boundary dead-air vs ~300ms sentence-
+  split, and half the synthesis calls). The parser still supports its `softBoundaries`
+  clause mode, now exposed as **`--fast-speech`** / `fastSpeech`, for the lowest
+  first-word latency at the cost of choppier prosody. Generation, synthesis, and
+  playback still run fully in parallel (playback pre-buffer ~0.25s), so audio
+  starts a fraction of a second in.
 - **`claude-voice local` auto-downloads the whisper model.** The whisper.cpp
   model (~150 MB) is now fetched for you with a progress bar (matching Kokoro,
   which self-downloads), streamed to disk via a `.part` file + atomic rename so
@@ -98,6 +103,13 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Fixed
 
+- **Streamed speech no longer waits for the whole reply to finish.** The synthesis
+  loop batched every pending clause into one clip, so when Claude generated text
+  faster than the TTS could synthesize it (the common case) the whole reply
+  collapsed into a single clip and only began playing once it had *all* been
+  synthesized — the "it stays silent then speaks at the end" behavior. Clauses/
+  sentences are now rendered one at a time, so the first plays the moment it's
+  ready and audio tracks generation hand-in-hand.
 - **`claude-voice update` targets the correct package.** It now reads the package
   name from `package.json` (and handles scoped registry URLs) instead of a
   hard-coded `claude-voice`, so after the scoped rename it no longer checks or
