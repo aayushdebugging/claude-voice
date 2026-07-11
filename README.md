@@ -108,7 +108,7 @@ claude-voice --local              # fully-local, free stack (whisper.cpp + Kokor
 | `/stream` | toggle speaking-as-Claude-writes vs speaking the whole reply at once |
 | `/quit` | exit |
 
-While listening, a live **mic-level meter** in the status bar fills green as it hears you, so you always know the mic is working. Claude's answer streams to the screen as it's written and is **spoken as it streams** — each sentence is synthesized *ahead* of playback, so audio starts right after the first sentence instead of after the whole reply (a big difference on long answers).
+While listening, a live **mic-level meter** in the status bar fills green as it hears you, so you always know the mic is working. Claude's answer streams to the screen as it's written and is **spoken as it streams** — text is chunked at **clause boundaries** (commas, not just full stops) and each chunk is synthesized *ahead* of playback, so audio starts after the first *clause* — a fraction of a second in, rather than after the whole sentence or reply. Generation, synthesis, and playback all run in parallel and never block each other.
 
 For **gapless** streaming, install `ffmpeg` (`brew install ffmpeg`): the reply is fed sentence-by-sentence into a single persistent audio stream (`ffplay`), which waits during pauses rather than reopening the device — so it sounds like one continuous answer. Without a streaming player it falls back to playing a few back-to-back clips via `afplay` (a small seam between clips), and `--no-stream` (or `/stream`) speaks the whole reply at once with no seams at all. sox `play` is intentionally not used for streaming — it cuts off on the first pause.
 

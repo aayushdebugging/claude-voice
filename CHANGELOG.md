@@ -23,6 +23,12 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Added
 
+- **Lower-latency streamed speech (clause-level chunking).** Speech now starts
+  after the first *clause* (a comma) instead of the first full sentence — the
+  sentence parser gained an opt-in `softBoundaries` mode (`,` `;` `:` `—`) with a
+  `softMinLength` and a `maxLength` word-boundary safety flush, and the playback
+  pre-buffer was cut from ~0.8s to ~0.25s. Generation, synthesis, and playback
+  run fully in parallel, so first audio lands a fraction of a second in.
 - **`claude-voice local` auto-downloads the whisper model.** The whisper.cpp
   model (~150 MB) is now fetched for you with a progress bar (matching Kokoro,
   which self-downloads), streamed to disk via a `.part` file + atomic rename so

@@ -98,4 +98,35 @@ describe('SentenceParser', () => {
     const emitted = parser.push('B. ');
     expect(emitted[0]?.index).toBe(0);
   });
+
+  it('does NOT split on commas by default (pure sentence mode)', () => {
+    const parser = new SentenceParser();
+    expect(streamByChar(parser, 'Hello, world, again. Done.')).toEqual([
+      'Hello, world, again.',
+      'Done.',
+    ]);
+  });
+});
+
+describe('SentenceParser (clause / low-latency mode)', () => {
+  it('emits at clause boundaries once the phrase is long enough', () => {
+    const parser = new SentenceParser({ minLength: 2, softBoundaries: true, softMinLength: 5 });
+    const out = streamByChar(parser, 'Well, that is interesting. ');
+    expect(out).toEqual(['Well,', 'that is interesting.']);
+  });
+
+  it('holds a too-short clause and merges it forward', () => {
+    // "Hi," (3 chars) is below softMinLength, so it merges into the next clause.
+    const parser = new SentenceParser({ minLength: 2, softBoundaries: true, softMinLength: 8 });
+    const out = streamByChar(parser, 'Hi, there everyone, welcome.');
+    expect(out).toEqual(['Hi, there everyone,', 'welcome.']);
+  });
+
+  it('force-flushes a long run with no punctuation at a word boundary', () => {
+    const parser = new SentenceParser({ softBoundaries: true, maxLength: 10 });
+    // No punctuation; must not stall — flush at the last space within maxLength.
+    expect(parser.push('abcde fghij klmno ')).toEqual(
+      expect.arrayContaining([expect.objectContaining({ text: 'abcde' })]),
+    );
+  });
 });

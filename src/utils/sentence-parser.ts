@@ -20,6 +20,8 @@ import type { Sentence } from '../types/index.js';
  */
 
 const TERMINATORS = new Set(['.', '?', '!']);
+/** Soft (clause) boundaries — used for low-latency chunking when enabled. */
+const SOFT_BOUNDARIES = new Set([',', ';', ':', '—', '–']);
 /** Closing characters that may follow a terminator and still belong to it. */
 const CLOSERS = new Set(['"', "'", ')', ']', '}', '”', '’', '»']);
 /** Lowercased abbreviations (dots stripped) that should not end a sentence. */
@@ -52,15 +54,34 @@ export interface SentenceParserOptions {
    * are held and merged with the following text to avoid choppy playback.
    */
   minLength?: number;
+  /**
+   * Also break at clause boundaries (`,` `;` `:` `—`) so speech can start after
+   * the first clause instead of the first full sentence — much lower latency for
+   * streamed TTS. Off by default (keeps pure sentence segmentation).
+   */
+  softBoundaries?: boolean;
+  /** Minimum phrase length before a soft (clause) boundary may fire. */
+  softMinLength?: number;
+  /**
+   * Force a flush at a word boundary once the buffer exceeds this many chars
+   * with no punctuation, so a long run-on never stalls playback. 0 disables.
+   */
+  maxLength?: number;
 }
 
 export class SentenceParser {
   private buffer = '';
   private index = 0;
   private readonly minLength: number;
+  private readonly softBoundaries: boolean;
+  private readonly softMinLength: number;
+  private readonly maxLength: number;
 
   constructor(options: SentenceParserOptions = {}) {
     this.minLength = Math.max(1, options.minLength ?? 1);
+    this.softBoundaries = options.softBoundaries ?? false;
+    this.softMinLength = Math.max(1, options.softMinLength ?? 24);
+    this.maxLength = Math.max(0, options.maxLength ?? 0);
   }
 
   /** Feed a chunk of streamed text; returns any newly completed sentences. */
@@ -110,29 +131,45 @@ export class SentenceParser {
 
     for (let i = 0; i < buf.length; i++) {
       const ch = buf[i]!;
-      if (!TERMINATORS.has(ch)) continue;
-      if (this.isFalseTerminator(buf, i)) continue;
 
-      // Consume a run of terminators ("?!", "...") then trailing closers.
-      let end = i;
-      while (end + 1 < buf.length && TERMINATORS.has(buf[end + 1]!)) end++;
-      while (end + 1 < buf.length && CLOSERS.has(buf[end + 1]!)) end++;
+      if (TERMINATORS.has(ch) && !this.isFalseTerminator(buf, i)) {
+        // Consume a run of terminators ("?!", "...") then trailing closers.
+        let end = i;
+        while (end + 1 < buf.length && TERMINATORS.has(buf[end + 1]!)) end++;
+        while (end + 1 < buf.length && CLOSERS.has(buf[end + 1]!)) end++;
 
-      const next = buf[end + 1];
-      if (next === undefined) break; // terminator at tail — wait for more input
-      if (/\s/.test(next)) {
-        // Prefer an earlier paragraph break if one precedes this terminator.
-        if (paraIndex !== -1 && paraIndex < i) break;
-        const candidate = end + 1;
-        if (buf.slice(0, candidate).trim().length >= this.minLength) return candidate;
-        // Too short: skip this boundary and keep scanning to merge forward.
-        i = end;
+        const next = buf[end + 1];
+        if (next === undefined) break; // terminator at tail — wait for more input
+        if (/\s/.test(next)) {
+          // Prefer an earlier paragraph break if one precedes this terminator.
+          if (paraIndex !== -1 && paraIndex < i) break;
+          const candidate = end + 1;
+          if (buf.slice(0, candidate).trim().length >= this.minLength) return candidate;
+          // Too short: skip this boundary and keep scanning to merge forward.
+          i = end;
+        }
+      } else if (this.softBoundaries && SOFT_BOUNDARIES.has(ch)) {
+        // Clause boundary: emit the phrase (with its punctuation) as soon as it's
+        // long enough, so speech starts after the first clause, not the first
+        // sentence.
+        const next = buf[i + 1];
+        if (next === undefined) break; // clause mark at the tail — wait for more
+        if (/\s/.test(next)) {
+          if (paraIndex !== -1 && paraIndex < i) break;
+          if (buf.slice(0, i + 1).trim().length >= this.softMinLength) return i + 1;
+        }
       }
     }
 
     if (paraIndex !== -1) {
       const candidate = paraIndex + 1;
       if (buf.slice(0, candidate).trim().length >= this.minLength) return candidate;
+    }
+    // Safety flush: a long run with no boundary — cut at the last word break so
+    // playback never stalls waiting for punctuation.
+    if (this.maxLength > 0 && buf.length >= this.maxLength) {
+      const sp = buf.lastIndexOf(' ', this.maxLength);
+      if (sp > 0) return sp + 1;
     }
     return -1;
   }

@@ -51,7 +51,14 @@ export class Conversation {
 
   constructor(deps: ConversationDeps) {
     this.deps = deps;
-    this.parser = new SentenceParser({ minLength: 2 });
+    // Clause-level chunking so speech starts after the first clause (a comma),
+    // not the first full sentence — much lower latency for streamed TTS.
+    this.parser = new SentenceParser({
+      minLength: 2,
+      softBoundaries: true,
+      softMinLength: 18,
+      maxLength: 180,
+    });
   }
 
   get currentState(): ConversationState {

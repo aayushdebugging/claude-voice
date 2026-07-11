@@ -269,11 +269,12 @@ export class SpeechQueue {
   private async runPlayLoop(signal: AbortSignal): Promise<void> {
     const marker = { text: '', index: 0 };
     const persistent = this.sink.streaming === true;
-    // Build a small lead of audio before playback starts, so a brief pause in
-    // generation (e.g. at a paragraph break) doesn't drain the buffer and open
-    // an audible gap. ~0.8s of audio; short replies skip it (synthDone fires).
+    // Build a *small* lead of audio before playback starts — just enough to
+    // avoid an immediate underrun, but small so speech starts fast (clause
+    // chunks refill it quickly and the persistent stream rides out jitter).
+    // ~0.25s; short replies skip it entirely (synthDone fires first).
     const prebufferBytes = Math.round(
-      0.8 * this.provider.sampleRate * this.provider.channels * (this.provider.bitDepth / 8),
+      0.25 * this.provider.sampleRate * this.provider.channels * (this.provider.bitDepth / 8),
     );
     const readyBytes = (): number => this.readyClips.reduce((sum, b) => sum + b.length, 0);
     let opened = false;
