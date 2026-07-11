@@ -232,4 +232,36 @@ describe('SpeechQueue (streaming)', () => {
     q.push('too late');
     expect(tts.spoken).toEqual([]);
   });
+
+  it('keeps speaking the rest of the reply when one clause fails to synthesize', async () => {
+    // Throws for any clause containing "FAIL" (a mid-reply TTS hiccup), succeeds otherwise.
+    class FlakyTts extends FakeTts {
+      failAttempts = 0;
+      async *synthesize(options: SynthesisOptions): AsyncIterable<Buffer> {
+        if (options.text.includes('FAIL')) {
+          this.failAttempts++;
+          throw new Error('synth boom');
+        }
+        yield* super.synthesize(options);
+      }
+    }
+    const flaky = new FlakyTts();
+    const sink = new FakeSink();
+    const errors: Error[] = [];
+    bus.on(VoiceEvent.Error, (e) => errors.push(e.error));
+    const q = new SpeechQueue({ provider: flaky, sink, bus });
+
+    await q.beginStream();
+    q.push('First clause.');
+    q.push('FAIL clause.');
+    q.push('Third clause.');
+    await q.endStream();
+
+    // The failing clause is skipped (after one retry) but the others still play,
+    // in order — one hiccup must not silence the rest of the reply.
+    expect(flaky.spoken).toEqual(['First clause.', 'Third clause.']);
+    expect(flaky.failAttempts).toBe(2); // tried once, retried once, then gave up
+    expect(errors.length).toBe(1); // reported exactly once
+    expect(q.isSpeaking).toBe(false); // stream finished cleanly
+  });
 });

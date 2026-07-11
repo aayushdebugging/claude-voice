@@ -240,9 +240,25 @@ export class SpeechQueue {
           continue;
         }
         const clause = this.pendingText.shift()!;
-        const pcm = await this.render(clause, signal);
+        // Render with one retry, and never let a single failed clause tear down
+        // the whole loop: on repeated failure, report it and move on so the
+        // *rest* of the reply is still spoken. (A mid-reply TTS hiccup — a
+        // dropped connection, a server timeout on a long session — used to
+        // silence everything after it.)
+        let pcm: Buffer | null = null;
+        for (let attempt = 0; attempt < 2; attempt++) {
+          try {
+            pcm = await this.render(clause, signal);
+            break;
+          } catch (err) {
+            if (signal.aborted) return;
+            if (attempt === 1) {
+              this.bus?.emit(VoiceEvent.Error, { scope: 'tts', error: err as Error });
+            }
+          }
+        }
         if (signal.aborted) return;
-        if (pcm.length > 0) {
+        if (pcm && pcm.length > 0) {
           this.readyClips.push(pcm);
           this.wake('clip');
         }
