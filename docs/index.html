@@ -19,23 +19,28 @@
       rel="icon"
       href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%8E%99%EF%B8%8F%3C/text%3E%3C/svg%3E"
     />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
     <style>
       :root {
         --bg: #ffffff;
-        --bg-soft: #fbfaf9;
-        --ink: #14141a;
+        --bg-soft: #fbfaf8;
+        --ink: #0f0f14;
         --muted: #6b7280;
-        --line: #e7e6e3;
-        --panel: #ffffff;
-        --code-bg: #f6f7f9;
+        --line: #e9e8e4;
+        --code-bg: #f7f7f9;
         --g1: #ff7a1a;
         --g2: #ff5a4d;
         --g3: #ef5a8f;
         --g4: #a855f7;
-        --peach: #fde3cf;
-        --sans: system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-        --mono: ui-monospace, "SF Mono", "JetBrains Mono", Menlo, Consolas, monospace;
-        --grad: linear-gradient(95deg, var(--g1), var(--g2) 38%, var(--g3) 68%, var(--g4));
+        --peach: #fce1cd;
+        --sans: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+        --mono: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+        --grad: linear-gradient(95deg, var(--g1), var(--g2) 36%, var(--g3) 66%, var(--g4));
       }
       * {
         box-sizing: border-box;
@@ -43,7 +48,7 @@
       html,
       body {
         margin: 0;
-        background: var(--bg);
+        background: var(--bg-soft);
         color: var(--ink);
         font-family: var(--sans);
         -webkit-font-smoothing: antialiased;
@@ -51,12 +56,16 @@
       }
       body {
         background:
-          radial-gradient(680px 380px at 88% 6%, rgba(255, 122, 26, 0.06), transparent 60%),
+          radial-gradient(720px 420px at 86% 4%, rgba(255, 122, 26, 0.07), transparent 62%),
+          radial-gradient(680px 420px at 6% 8%, rgba(168, 85, 247, 0.05), transparent 60%),
           var(--bg-soft);
       }
       a {
         color: inherit;
         text-decoration: none;
+      }
+      img {
+        display: inline-block;
       }
       .wrap {
         max-width: 1180px;
@@ -69,34 +78,33 @@
         position: sticky;
         top: 0;
         z-index: 20;
-        background: rgba(251, 250, 249, 0.82);
-        backdrop-filter: saturate(1.4) blur(10px);
+        background: rgba(251, 250, 248, 0.8);
+        backdrop-filter: saturate(1.5) blur(12px);
         border-bottom: 1px solid var(--line);
       }
       .nav {
         display: flex;
         align-items: center;
         gap: 20px;
-        height: 68px;
+        height: 70px;
       }
       .logo {
         display: flex;
         align-items: center;
         gap: 11px;
         font-weight: 800;
-        font-size: 19px;
-        letter-spacing: -0.01em;
+        font-size: 18px;
+        letter-spacing: -0.02em;
       }
       .logo .spark {
         color: var(--g1);
-        font-size: 22px;
-        line-height: 1;
+        font-size: 21px;
       }
       .vpill {
         font-family: var(--mono);
-        font-size: 12px;
+        font-size: 11.5px;
         color: var(--muted);
-        background: #f0eeeb;
+        background: #f1efec;
         border: 1px solid var(--line);
         border-radius: 999px;
         padding: 3px 9px;
@@ -104,11 +112,14 @@
       }
       .menu {
         display: flex;
-        gap: 26px;
+        gap: 28px;
         margin: 0 auto;
         color: #4b4b55;
         font-size: 15px;
         font-weight: 500;
+      }
+      .menu a {
+        position: relative;
       }
       .menu a:hover {
         color: var(--ink);
@@ -125,24 +136,28 @@
         border: 1px solid var(--line);
         background: #fff;
         border-radius: 12px;
-        padding: 8px 13px;
+        padding: 8px 14px;
         font-weight: 600;
         font-size: 14px;
-        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+      }
+      .ghpill img {
+        height: 18px;
       }
       .ghpill:hover {
-        border-color: #d3d2ce;
+        border-color: #d3d2cd;
       }
       .cta {
         display: inline-flex;
         align-items: center;
         gap: 8px;
-        background: #16161c;
+        background: #15151b;
         color: #fff;
         border-radius: 12px;
         padding: 10px 18px;
         font-weight: 700;
         font-size: 14px;
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.14);
       }
       .cta:hover {
         background: #000;
@@ -151,30 +166,30 @@
       /* ---------- hero ---------- */
       .hero {
         display: grid;
-        grid-template-columns: 1.05fr 1fr;
-        gap: 54px;
+        grid-template-columns: 1.02fr 1fr;
+        gap: 56px;
         align-items: center;
-        padding: 62px 0 30px;
+        padding: 70px 0 34px;
       }
       .badge {
         display: inline-flex;
         align-items: center;
         gap: 9px;
-        border: 1px solid #ffd9c2;
+        border: 1px solid #ffd7bd;
         background: #fff4ec;
         color: #d1451b;
         border-radius: 999px;
         padding: 8px 16px;
         font-size: 14px;
         font-weight: 600;
-        margin-bottom: 26px;
+        margin-bottom: 28px;
       }
       h1 {
-        font-size: clamp(48px, 7.4vw, 92px);
-        line-height: 0.98;
-        letter-spacing: -0.035em;
-        font-weight: 800;
-        margin: 0 0 24px;
+        font-size: clamp(50px, 7.6vw, 96px);
+        line-height: 0.94;
+        letter-spacing: -0.04em;
+        font-weight: 900;
+        margin: 0 0 26px;
       }
       h1 .grad {
         background: var(--grad);
@@ -187,56 +202,69 @@
         font-size: clamp(17px, 1.5vw, 20px);
         line-height: 1.55;
         max-width: 540px;
-        margin: 0 0 32px;
+        margin: 0 0 34px;
+        font-weight: 400;
       }
       .install {
         display: flex;
         gap: 12px;
         flex-wrap: wrap;
-        margin-bottom: 22px;
+        margin-bottom: 24px;
       }
       .cmd {
         display: flex;
         align-items: center;
-        gap: 10px;
+        gap: 12px;
         background: #fff;
         border: 1px solid var(--line);
         border-radius: 13px;
         padding: 15px 16px;
-        font-family: var(--mono);
-        font-size: 15px;
-        cursor: pointer;
         flex: 1;
-        min-width: 300px;
-        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
+        min-width: 280px;
+        max-width: 430px;
+        cursor: pointer;
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+        overflow: hidden;
       }
       .cmd:hover {
-        border-color: #d3d2ce;
+        border-color: #d3d2cd;
+      }
+      .cmd code {
+        flex: 1;
+        font-family: var(--mono);
+        font-size: 13.5px;
+        white-space: nowrap;
+        overflow-x: auto;
+        scrollbar-width: none;
+      }
+      .cmd code::-webkit-scrollbar {
+        display: none;
       }
       .cmd .dollar {
-        color: #9aa0a6;
+        color: #a3a3ab;
       }
       .cmd .kw {
         color: var(--g2);
         font-weight: 600;
       }
       .cmd .copy {
-        margin-left: auto;
         color: #b4b4bb;
-        font-size: 16px;
+        font-size: 17px;
+        flex: none;
       }
       .btn {
         display: inline-flex;
         align-items: center;
         gap: 9px;
-        background: #16161c;
+        background: #15151b;
         color: #fff;
         border: none;
         border-radius: 13px;
-        padding: 0 24px;
+        padding: 0 26px;
         font-weight: 700;
         font-size: 15px;
         cursor: pointer;
+        box-shadow: 0 8px 22px rgba(0, 0, 0, 0.16);
       }
       .btn:hover {
         background: #000;
@@ -244,7 +272,7 @@
       .works {
         display: flex;
         align-items: center;
-        gap: 8px 18px;
+        gap: 9px 20px;
         flex-wrap: wrap;
         color: #6b6b74;
         font-size: 14.5px;
@@ -252,14 +280,22 @@
       .works b {
         color: #9aa0a6;
         font-weight: 600;
-        margin-right: 4px;
       }
       .works span {
         display: inline-flex;
         align-items: center;
-        gap: 7px;
+        gap: 8px;
         font-weight: 500;
         color: #3f3f47;
+      }
+      .works img {
+        height: 17px;
+        width: auto;
+      }
+      .works .term-ico {
+        font-family: var(--mono);
+        color: var(--g4);
+        font-weight: 700;
       }
 
       /* ---------- terminal ---------- */
@@ -268,38 +304,40 @@
       }
       .term-stack .peach {
         position: absolute;
-        inset: 26px -26px -26px 40px;
+        inset: 30px -22px -24px 46px;
         background: var(--peach);
         border-radius: 22px;
         z-index: 0;
       }
       .term-stack .dots {
         position: absolute;
-        right: -14px;
-        top: 120px;
-        width: 130px;
+        right: -10px;
+        top: 130px;
+        width: 120px;
         height: 150px;
-        background-image: radial-gradient(circle, rgba(255, 122, 26, 0.5) 1.5px, transparent 1.6px);
+        background-image: radial-gradient(circle, rgba(255, 122, 26, 0.55) 1.4px, transparent 1.5px);
         background-size: 15px 15px;
         z-index: 0;
         opacity: 0.7;
       }
       .term-stack .sparkle {
         position: absolute;
-        right: -8px;
-        top: -18px;
+        right: -6px;
+        top: -20px;
         font-size: 26px;
         color: var(--g4);
-        z-index: 2;
+        z-index: 3;
       }
       .term {
         position: relative;
         z-index: 1;
         background: #fff;
-        border: 1px solid #eceae7;
+        border: 1px solid #edece8;
         border-radius: 16px;
         overflow: hidden;
-        box-shadow: 0 26px 60px rgba(30, 20, 10, 0.14);
+        box-shadow:
+          0 2px 8px rgba(30, 20, 10, 0.05),
+          0 30px 70px rgba(30, 20, 10, 0.16);
       }
       .term .bar {
         position: relative;
@@ -307,7 +345,7 @@
         align-items: center;
         gap: 7px;
         padding: 13px 16px;
-        border-bottom: 1px solid #f0efec;
+        border-bottom: 1px solid #f1f0ed;
       }
       .term .bar i {
         width: 12px;
@@ -330,19 +368,17 @@
         text-align: center;
         font-family: var(--mono);
         font-size: 13px;
-        color: #9aa0a6;
+        color: #a3a3ab;
       }
       .term .body {
         padding: 18px 20px;
         font-family: var(--mono);
         font-size: 13.5px;
-        line-height: 1.7;
+        line-height: 1.65;
         color: #2b2b33;
-        overflow-x: auto;
       }
       .term .body .l {
-        white-space: pre-wrap;
-        word-break: break-word;
+        margin: 2px 0;
       }
       .tg {
         color: #16a34a;
@@ -352,42 +388,45 @@
       }
       .tb {
         color: #2563eb;
+        font-weight: 600;
       }
       .tc {
         color: var(--g2);
+        font-weight: 600;
       }
       .tm {
-        color: #9aa0a6;
+        color: #a3a3ab;
       }
-      .code {
+      .pre {
+        margin: 12px 0;
         background: var(--code-bg);
-        border: 1px solid #eceae7;
+        border: 1px solid #edece8;
         border-radius: 10px;
-        padding: 12px 14px;
-        margin: 10px 0;
-        font-size: 12.8px;
-        line-height: 1.75;
+        padding: 13px 15px;
+        font-family: var(--mono);
+        font-size: 12.6px;
+        line-height: 1.7;
+        white-space: pre;
+        overflow-x: auto;
       }
-      .code .kw {
+      .pre .lang {
+        color: #a3a3ab;
+      }
+      .pre .kw {
         color: #7c3aed;
       }
-      .code .fn {
+      .pre .fn {
         color: #ea580c;
       }
-      .code .bi {
+      .pre .bi {
         color: #0d9488;
-      }
-      .code .lang {
-        color: #9aa0a6;
-        display: block;
-        margin-bottom: 4px;
       }
       .twave {
         display: flex;
-        align-items: center;
+        align-items: flex-end;
         gap: 3px;
-        height: 20px;
-        margin: 8px 0 4px;
+        height: 22px;
+        margin: 12px 0 6px;
       }
       .twave span {
         width: 3px;
@@ -397,7 +436,7 @@
       @keyframes bar {
         0%,
         100% {
-          transform: scaleY(0.45);
+          transform: scaleY(0.4);
         }
         50% {
           transform: scaleY(1);
@@ -406,7 +445,7 @@
 
       /* ---------- features ---------- */
       .features {
-        padding: 46px 0 20px;
+        padding: 52px 0 24px;
       }
       .cards {
         display: grid;
@@ -416,24 +455,31 @@
       .card {
         background: #fff;
         border: 1px solid var(--line);
-        border-radius: 16px;
-        padding: 22px;
-        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
+        border-radius: 18px;
+        padding: 24px;
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+        transition:
+          transform 0.16s,
+          box-shadow 0.16s;
+      }
+      .card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 16px 40px rgba(20, 15, 10, 0.09);
       }
       .card .ico {
-        width: 42px;
-        height: 42px;
-        border-radius: 11px;
+        width: 44px;
+        height: 44px;
+        border-radius: 12px;
         display: grid;
         place-items: center;
-        font-size: 19px;
-        margin-bottom: 14px;
+        font-size: 20px;
+        margin-bottom: 15px;
       }
       .i-orange {
         background: #fff0e6;
       }
       .i-violet {
-        background: #f2ecfe;
+        background: #f3ecfe;
       }
       .i-green {
         background: #e7f7ee;
@@ -442,9 +488,10 @@
         background: #e8f0fe;
       }
       .card h3 {
-        margin: 0 0 7px;
+        margin: 0 0 8px;
         font-size: 16.5px;
         font-weight: 700;
+        letter-spacing: -0.01em;
       }
       .card p {
         margin: 0;
@@ -458,11 +505,11 @@
         text-align: center;
         color: #7a7a83;
         font-size: 14px;
-        padding: 40px 0 46px;
+        padding: 46px 0 50px;
       }
       footer .sep {
         margin: 0 14px;
-        color: #d3d2ce;
+        color: #d3d2cd;
       }
       footer .heart {
         color: var(--g2);
@@ -475,7 +522,7 @@
         .hero {
           grid-template-columns: 1fr;
           gap: 40px;
-          padding: 42px 0 10px;
+          padding: 44px 0 12px;
         }
         .cards {
           grid-template-columns: repeat(2, 1fr);
@@ -483,6 +530,9 @@
         .term-stack .peach,
         .term-stack .dots {
           display: none;
+        }
+        .cmd {
+          max-width: none;
         }
       }
       @media (max-width: 560px) {
@@ -514,7 +564,13 @@
           >
         </nav>
         <div class="actions">
-          <a class="ghpill" href="https://github.com/aayushdebugging/claude-voice">◑ GitHub</a>
+          <a class="ghpill" href="https://github.com/aayushdebugging/claude-voice">
+            <img
+              src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/github/github-original.svg"
+              alt=""
+            />
+            GitHub
+          </a>
           <a class="cta" href="https://www.npmjs.com/package/@aayushdebugging/claude-voice"
             >↓ Get Started</a
           >
@@ -526,15 +582,17 @@
       <section class="hero">
         <div class="hero-left">
           <div class="badge">🔊 Talk to Claude. In your terminal.</div>
-          <h1><span class="ink">Claude.</span><br /><span class="grad">By your voice.</span></h1>
+          <h1><span>Claude.</span><br /><span class="grad">By your voice.</span></h1>
           <p class="sub">
             Claude Voice CLI brings the power of Claude to your terminal. Speak naturally, get
             intelligent answers, and stay in your flow.
           </p>
           <div class="install">
             <div class="cmd" id="cmd" title="Click to copy">
-              <span class="dollar">$</span>
-              <span><span class="kw">npm</span> install -g @aayushdebugging/claude-voice</span>
+              <code
+                ><span class="dollar">$</span> <span class="kw">npm</span> install -g
+                @aayushdebugging/claude-voice</code
+              >
               <span class="copy" id="copy">⧉</span>
             </div>
             <a class="btn" href="https://www.npmjs.com/package/@aayushdebugging/claude-voice"
@@ -543,10 +601,28 @@
           </div>
           <div class="works">
             <b>Works on</b>
-            <span>🍎 macOS</span>
-            <span>🐧 Linux</span>
-            <span>🪟 Windows</span>
-            <span>▧ WSL</span>
+            <span
+              ><img
+                src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/apple/apple-original.svg"
+                alt=""
+              />
+              macOS</span
+            >
+            <span
+              ><img
+                src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/linux/linux-original.svg"
+                alt=""
+              />
+              Linux</span
+            >
+            <span
+              ><img
+                src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/windows8/windows8-original.svg"
+                alt=""
+              />
+              Windows</span
+            >
+            <span><span class="term-ico">›_</span> WSL</span>
           </div>
         </div>
 
@@ -563,24 +639,16 @@
               <div class="body">
                 <div class="l"><span class="tg">$</span> claude-voice</div>
                 <div class="l"><span class="to">🎤 Listening…</span></div>
-                <div class="l">
-                  <span class="tb">You:</span> How can I refactor this Python function to make it
-                  more efficient?
-                </div>
-                <div class="l">
-                  <span class="tc">✳ Claude:</span> Here's a more efficient version using list
-                  comprehension and defaultdict…
-                </div>
-                <div class="code">
-                  <span class="lang">python</span
-                  ><span class="l"><span class="kw">from</span> collections <span class="kw">import</span> <span class="bi">defaultdict</span>
+                <div class="l"><span class="tb">You:</span> How can I refactor this Python function to make it more efficient?</div>
+                <div class="l"><span class="tc">✳ Claude:</span> Here's a more efficient version using list comprehension and defaultdict…</div>
+<pre class="pre"><span class="lang">python</span>
+<span class="kw">from</span> collections <span class="kw">import</span> <span class="bi">defaultdict</span>
 
 <span class="kw">def</span> <span class="fn">group_by_key</span>(items):
     groups = <span class="bi">defaultdict</span>(<span class="bi">list</span>)
     <span class="kw">for</span> key, value <span class="kw">in</span> items:
         groups[key].append(value)
-    <span class="kw">return</span> <span class="bi">dict</span>(groups)</span>
-                </div>
+    <span class="kw">return</span> <span class="bi">dict</span>(groups)</pre>
                 <div class="twave" id="termWave" aria-hidden="true"></div>
                 <div class="l"><span class="tm">Press Ctrl+C to exit</span></div>
               </div>
@@ -599,12 +667,12 @@
           <div class="card">
             <div class="ico i-violet">✦</div>
             <h3>Fast &amp; Lightweight</h3>
-            <p>Built with performance in mind. Clause-level streaming, minimal deps, maximum speed.</p>
+            <p>Clause-level streaming starts speaking in a fraction of a second. Minimal deps.</p>
           </div>
           <div class="card">
             <div class="ico i-green">🔒</div>
             <h3>Private &amp; Secure</h3>
-            <p>Run a fully-local, $0 stack with no cloud and no keys. Remote mode is tools-off by default.</p>
+            <p>Run a fully-local, $0 stack — no cloud, no keys. Remote mode is tools-off by default.</p>
           </div>
           <div class="card">
             <div class="ico i-blue">›_</div>
@@ -621,20 +689,18 @@
     </footer>
 
     <script>
-      // Animated terminal waveform (orange → violet gradient across the bars).
       const wave = document.getElementById('termWave');
       if (wave) {
         const cols = ['#ff7a1a', '#ff5a4d', '#ef5a8f', '#a855f7'];
-        for (let i = 0; i < 64; i++) {
+        for (let i = 0; i < 66; i++) {
           const b = document.createElement('span');
-          const h = 4 + Math.abs(Math.sin(i * 0.6)) * 14 + (i % 4) * 2;
+          const h = 4 + Math.abs(Math.sin(i * 0.6)) * 15 + (i % 4) * 2;
           b.style.height = Math.round(h) + 'px';
-          b.style.background = cols[Math.floor((i / 64) * cols.length)];
+          b.style.background = cols[Math.floor((i / 66) * cols.length)];
           b.style.animationDelay = (i * 0.03).toFixed(2) + 's';
           wave.appendChild(b);
         }
       }
-      // Click-to-copy the install command.
       const cmd = document.getElementById('cmd'),
         copy = document.getElementById('copy');
       if (cmd)
