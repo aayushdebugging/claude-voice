@@ -151,7 +151,7 @@ describe('SpeechQueue (streaming)', () => {
     expect(new SpeechQueue({ provider: tts, sink: new FakeSink(), bus }).canStream).toBe(true);
   });
 
-  it('batches sentences that are already queued into one clip', async () => {
+  it('renders one clause at a time even when several are already queued (no greedy batch)', async () => {
     const sink = new FakeSink();
     const q = new SpeechQueue({ provider: tts, sink, bus });
     let started = 0;
@@ -164,10 +164,13 @@ describe('SpeechQueue (streaming)', () => {
     q.push('Two.');
     await q.endStream();
 
-    // Both were available before synthesis ran, so they render as one clip…
-    expect(tts.spoken).toEqual(['One. Two.']);
-    // …played as one begin…end segment.
-    expect(sink.events).toEqual(['begin', 'end']);
+    // Both clauses were queued before synthesis ran, but they must NOT collapse
+    // into a single clip — each renders on its own so the first plays as early as
+    // possible. (Greedy batching here was the cause of speech only starting once
+    // the whole reply had finished synthesizing.)
+    expect(tts.spoken).toEqual(['One.', 'Two.']);
+    expect(sink.events).toEqual(['begin', 'end', 'begin', 'end']);
+    // Start/finish still bracket the whole stream exactly once.
     expect(started).toBe(1);
     expect(finished).toBe(1);
     expect(q.isSpeaking).toBe(false);

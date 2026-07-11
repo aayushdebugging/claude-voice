@@ -227,9 +227,12 @@ export class SpeechQueue {
   }
 
   /**
-   * Synthesis loop: greedily batch all currently-pending sentences into one
-   * clip and render it ahead of playback, so the player rarely waits. Batching
-   * also keeps the number of clips (and thus inter-clip seams) low.
+   * Synthesis loop: render one pending clause at a time, in order, *ahead* of
+   * playback. Taking a single clause (not all pending) is what lets speech start
+   * the instant the first clause is ready and track generation hand-in-hand —
+   * greedily batching everything would collapse a fast reply into one clip and
+   * only play it once the whole thing was synthesized (i.e. "waits till done").
+   * Subsequent clauses keep synthesizing while earlier ones play (synth-ahead).
    */
   private async runSynthLoop(signal: AbortSignal): Promise<void> {
     try {
@@ -241,8 +244,8 @@ export class SpeechQueue {
           await wake.promise;
           continue;
         }
-        const batch = this.pendingText.splice(0, this.pendingText.length).join(' ');
-        const pcm = await this.render(batch, signal);
+        const clause = this.pendingText.shift()!;
+        const pcm = await this.render(clause, signal);
         if (signal.aborted) return;
         if (pcm.length > 0) {
           this.readyClips.push(pcm);

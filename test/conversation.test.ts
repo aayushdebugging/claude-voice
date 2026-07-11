@@ -150,10 +150,10 @@ describe('Conversation', () => {
 
       expect(recognized).toEqual(['build a todo app']);
       expect(h.claude.asked).toEqual(['build a todo app']);
-      // Sentence events still fire per sentence (UI/plugins), but the whole
-      // reply is synthesized and spoken as one continuous clip.
+      // Each sentence fires its event and is spoken as its own clip as it
+      // streams — the reply is no longer collapsed into one continuous clip.
       expect(sentences).toEqual(['Sure thing.', 'All done now.']);
-      expect(h.tts.spoken).toEqual(['Sure thing. All done now.']);
+      expect(h.tts.spoken).toEqual(['Sure thing.', 'All done now.']);
       expect(h.conv.currentState).toBe('idle');
     });
 
@@ -251,7 +251,7 @@ describe('Conversation', () => {
       await running;
 
       expect(h.claude.asked).toEqual(['build a todo app']);
-      expect(h.tts.spoken).toEqual(['Sure thing. All done now.']);
+      expect(h.tts.spoken).toEqual(['Sure thing.', 'All done now.']);
     });
   });
 
@@ -265,7 +265,7 @@ describe('Conversation', () => {
 
       expect(recognized).toEqual(['build a todo app']);
       expect(h.claude.asked).toEqual(['build a todo app']);
-      expect(h.tts.spoken).toEqual(['Sure thing. All done now.']);
+      expect(h.tts.spoken).toEqual(['Sure thing.', 'All done now.']);
       expect(h.conv.currentState).toBe('idle');
     });
   });
