@@ -87,11 +87,17 @@ export class SentenceParser {
   /** Feed a chunk of streamed text; returns any newly completed sentences. */
   push(chunk: string): Sentence[] {
     this.buffer += chunk;
+    // Never let the buffer start with whitespace: a leading blank line — left
+    // over after emitting a paragraph, or at the very start of a reply — pins the
+    // paragraph index at 0 and suppresses every later boundary, so the rest of
+    // the reply is withheld until flush. In streaming speech that is heard as the
+    // voice going silent right after a blank line.
+    this.buffer = this.buffer.replace(/^\s+/, '');
     const out: Sentence[] = [];
     let boundary = this.findBoundary();
     while (boundary !== -1) {
       const raw = this.buffer.slice(0, boundary);
-      this.buffer = this.buffer.slice(boundary);
+      this.buffer = this.buffer.slice(boundary).replace(/^\s+/, '');
       const text = raw.trim();
       if (text.length > 0) out.push({ text, index: this.index++ });
       boundary = this.findBoundary();
@@ -128,6 +134,7 @@ export class SentenceParser {
     const buf = this.buffer;
     const paraMatch = buf.match(/\n[ \t]*\n/);
     const paraIndex = paraMatch?.index ?? -1;
+    const paraLen = paraMatch?.[0].length ?? 0;
 
     for (let i = 0; i < buf.length; i++) {
       const ch = buf[i]!;
@@ -140,7 +147,14 @@ export class SentenceParser {
 
         const next = buf[end + 1];
         if (next === undefined) break; // terminator at tail — wait for more input
-        if (/\s/.test(next)) {
+        // Accept a boundary when the terminator is followed by whitespace, OR
+        // directly by a capital that starts a new sentence with no space (e.g.
+        // "change it.Let me…" — a common gap in streamed text). Require the char
+        // before the terminator to be lowercase so acronyms like "U.S." aren't
+        // split apart.
+        const prev = buf[i - 1];
+        const capStart = /[A-Z]/.test(next) && prev !== undefined && /[a-z]/.test(prev);
+        if (/\s/.test(next) || capStart) {
           // Prefer an earlier paragraph break if one precedes this terminator.
           if (paraIndex !== -1 && paraIndex < i) break;
           const candidate = end + 1;
@@ -162,7 +176,7 @@ export class SentenceParser {
     }
 
     if (paraIndex !== -1) {
-      const candidate = paraIndex + 1;
+      const candidate = paraIndex + paraLen;
       if (buf.slice(0, candidate).trim().length >= this.minLength) return candidate;
     }
     // Safety flush: a long run with no boundary — cut at the last word break so

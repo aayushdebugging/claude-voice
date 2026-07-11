@@ -106,6 +106,46 @@ describe('SentenceParser', () => {
       'Done.',
     ]);
   });
+
+  it('splits on a period followed directly by a capital (missing space)', () => {
+    // Streamed text often drops the space: "change it.Let me…". Both parts must
+    // still be spoken, not merged into one run.
+    const parser = new SentenceParser();
+    expect(streamByChar(parser, 'I can change it.Let me see how.')).toEqual([
+      'I can change it.',
+      'Let me see how.',
+    ]);
+  });
+
+  it('only splits a missing-space period after a lowercase letter (keeps acronyms)', () => {
+    // "it.Then" splits (real sentence); "US.Now" does not (uppercase before the
+    // dot), so acronyms stay intact.
+    const parser = new SentenceParser();
+    expect(streamByChar(parser, 'Fix it.Then run US.Now stop.')).toEqual([
+      'Fix it.',
+      'Then run US.Now stop.',
+    ]);
+  });
+
+  it('splits back-to-back sentences with no spaces at all', () => {
+    const parser = new SentenceParser();
+    expect(streamByChar(parser, 'One.Two.Three.')).toEqual(['One.', 'Two.', 'Three.']);
+  });
+
+  it('streams the paragraph after a blank line instead of withholding it', () => {
+    // Regression: a blank line used to pin the paragraph index at 0 and suppress
+    // every later boundary, so everything after the blank was withheld until
+    // flush — heard as the voice going silent after the blank line. Now each
+    // paragraph's sentences stream as they complete.
+    const parser = new SentenceParser();
+    const out: string[] = [];
+    out.push(...parser.push('First part here. ').map((s) => s.text));
+    out.push(...parser.push('\n\n').map((s) => s.text));
+    out.push(...parser.push('Second part here. ').map((s) => s.text));
+    out.push(...parser.push('Third part here. ').map((s) => s.text));
+    expect(out).toEqual(['First part here.', 'Second part here.', 'Third part here.']);
+    expect(parser.pending.trim()).toBe('');
+  });
 });
 
 describe('SentenceParser (clause / low-latency mode)', () => {
