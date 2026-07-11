@@ -1,0 +1,493 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Claude Voice — talk to Claude in your terminal</title>
+    <meta
+      name="description"
+      content="Claude Voice: a CLI that lets you talk to Claude with your voice — hands-free AI assistance, right in your terminal. Streaming speech, a fully-local $0 stack, and a phone client."
+    />
+    <meta name="theme-color" content="#0a0a0e" />
+    <meta property="og:title" content="Claude Voice — talk to Claude in your terminal" />
+    <meta
+      property="og:description"
+      content="A CLI to talk to Claude with your voice. Hands-free AI assistance, right in your terminal."
+    />
+    <meta property="og:type" content="website" />
+    <link
+      rel="icon"
+      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%8E%99%EF%B8%8F%3C/text%3E%3C/svg%3E"
+    />
+    <style>
+      :root {
+        --bg: #0a0a0e;
+        --bg2: #0e0e14;
+        --fg: #ececf1;
+        --muted: #8a8a9a;
+        --line: #22222c;
+        --panel: #121219;
+        --g1: #ffb24d;
+        --g2: #ff6a4d;
+        --g3: #ff8fb0;
+        --green: #6ee7a8;
+        --cyan: #7fd6e6;
+        --violet: #b99cff;
+        --sans: system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        --mono: ui-monospace, "SF Mono", "JetBrains Mono", Menlo, Consolas, monospace;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--fg);
+        font-family: var(--sans);
+        -webkit-font-smoothing: antialiased;
+        overflow-x: hidden;
+      }
+      body {
+        background:
+          radial-gradient(900px 500px at 50% -8%, rgba(255, 106, 77, 0.16), transparent 60%),
+          radial-gradient(1200px 700px at 50% 120%, rgba(185, 156, 255, 0.08), transparent 60%),
+          var(--bg);
+        min-height: 100vh;
+      }
+      a {
+        color: inherit;
+        text-decoration: none;
+      }
+      .wrap {
+        max-width: 1080px;
+        margin: 0 auto;
+        padding: 0 22px;
+      }
+
+      /* ---- header ---- */
+      header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 20px 0;
+      }
+      .logo {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-family: var(--mono);
+        font-weight: 700;
+        letter-spacing: 0.02em;
+        font-size: 17px;
+      }
+      .logo .spark {
+        color: var(--g2);
+        font-size: 18px;
+      }
+      nav {
+        display: flex;
+        align-items: center;
+        gap: 22px;
+        color: var(--muted);
+        font-size: 15px;
+      }
+      nav a:hover {
+        color: var(--fg);
+      }
+      .star {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        padding: 7px 12px;
+        color: var(--fg);
+        background: #14141b;
+      }
+      .star:hover {
+        border-color: #3a3a48;
+      }
+
+      /* ---- hero ---- */
+      main {
+        position: relative;
+        text-align: center;
+        padding: 40px 0 70px;
+      }
+      .hero-wave {
+        position: absolute;
+        inset: 150px 0 auto 0;
+        height: 240px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 5px;
+        z-index: 0;
+        pointer-events: none;
+        opacity: 0.55;
+        -webkit-mask-image: radial-gradient(
+          ellipse 42% 120% at 50% 50%,
+          transparent 38%,
+          #000 72%
+        );
+        mask-image: radial-gradient(ellipse 42% 120% at 50% 50%, transparent 38%, #000 72%);
+      }
+      .hero-wave span {
+        width: 4px;
+        border-radius: 4px;
+        background: linear-gradient(180deg, var(--g1), var(--g2));
+        animation: bar 1.6s ease-in-out infinite;
+      }
+      @keyframes bar {
+        0%,
+        100% {
+          transform: scaleY(0.5);
+        }
+        50% {
+          transform: scaleY(1);
+        }
+      }
+      .hero-inner {
+        position: relative;
+        z-index: 1;
+      }
+      .badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 9px;
+        border: 1px solid var(--line);
+        background: rgba(20, 20, 27, 0.7);
+        border-radius: 999px;
+        padding: 9px 18px;
+        font-size: 14px;
+        color: #d9d9e3;
+        margin-bottom: 26px;
+      }
+      .badge .dot {
+        color: var(--g2);
+      }
+      h1 {
+        font-size: clamp(40px, 8vw, 86px);
+        line-height: 1.02;
+        letter-spacing: -0.02em;
+        font-weight: 800;
+        margin: 0 0 22px;
+      }
+      h1 .grad {
+        background: linear-gradient(100deg, var(--g1), var(--g2) 52%, var(--g3));
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+      }
+      .sub {
+        color: var(--muted);
+        font-size: clamp(16px, 2.4vw, 20px);
+        line-height: 1.55;
+        max-width: 640px;
+        margin: 0 auto 34px;
+      }
+
+      /* ---- install row ---- */
+      .install {
+        display: flex;
+        gap: 12px;
+        justify-content: center;
+        flex-wrap: wrap;
+        margin-bottom: 26px;
+      }
+      .cmd {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        background: var(--panel);
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        padding: 16px 20px;
+        font-family: var(--mono);
+        font-size: 16px;
+        min-width: min(520px, 92vw);
+        cursor: pointer;
+        transition: border-color 0.15s;
+      }
+      .cmd:hover {
+        border-color: #3a3a48;
+      }
+      .cmd .dollar {
+        color: var(--muted);
+      }
+      .cmd .kw {
+        color: var(--g2);
+      }
+      .cmd .copy {
+        margin-left: auto;
+        color: var(--muted);
+        font-family: var(--sans);
+        font-size: 13px;
+      }
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 9px;
+        border: none;
+        border-radius: 14px;
+        padding: 0 26px;
+        font-weight: 700;
+        font-size: 16px;
+        color: #1a0e08;
+        background: linear-gradient(100deg, var(--g1), var(--g2) 70%, var(--g3));
+        cursor: pointer;
+        box-shadow: 0 10px 30px rgba(255, 106, 77, 0.28);
+        transition:
+          transform 0.06s,
+          box-shadow 0.15s;
+      }
+      .btn:hover {
+        box-shadow: 0 12px 38px rgba(255, 106, 77, 0.42);
+      }
+      .btn:active {
+        transform: scale(0.98);
+      }
+
+      /* ---- feature chips ---- */
+      .feats {
+        display: flex;
+        gap: 10px 26px;
+        justify-content: center;
+        flex-wrap: wrap;
+        color: #c7c7d2;
+        font-size: 15px;
+        margin-bottom: 46px;
+      }
+      .feats span {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .feats .ic {
+        color: var(--g2);
+      }
+
+      /* ---- terminal ---- */
+      .term {
+        text-align: left;
+        max-width: 860px;
+        margin: 0 auto;
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        background: #0c0c12;
+        overflow: hidden;
+        box-shadow: 0 30px 80px rgba(0, 0, 0, 0.55);
+      }
+      .term .bar {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 12px 16px;
+        border-bottom: 1px solid var(--line);
+        background: #101017;
+        position: relative;
+      }
+      .term .bar i {
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        display: inline-block;
+      }
+      .term .bar .r {
+        background: #ff5f57;
+      }
+      .term .bar .y {
+        background: #febc2e;
+      }
+      .term .bar .g {
+        background: #28c840;
+      }
+      .term .bar .title {
+        position: absolute;
+        left: 0;
+        right: 0;
+        text-align: center;
+        color: var(--muted);
+        font-family: var(--mono);
+        font-size: 13px;
+      }
+      .term .body {
+        padding: 20px 22px;
+        font-family: var(--mono);
+        font-size: 14.5px;
+        line-height: 1.9;
+        overflow-x: auto;
+      }
+      .term .body .l {
+        white-space: pre;
+      }
+      .c-green {
+        color: var(--green);
+      }
+      .c-orange {
+        color: var(--g1);
+      }
+      .c-violet {
+        color: var(--violet);
+      }
+      .c-coral {
+        color: var(--g2);
+      }
+      .c-muted {
+        color: var(--muted);
+      }
+      .twave {
+        display: flex;
+        align-items: center;
+        gap: 3px;
+        height: 22px;
+        margin: 6px 0;
+      }
+      .twave span {
+        width: 3px;
+        border-radius: 3px;
+        background: linear-gradient(180deg, var(--g1), var(--g2));
+        animation: bar 1.1s ease-in-out infinite;
+      }
+
+      /* ---- footer ---- */
+      footer {
+        text-align: center;
+        color: var(--muted);
+        font-size: 14px;
+        padding: 40px 0 50px;
+      }
+      footer .sep {
+        opacity: 0.5;
+        margin: 0 12px;
+      }
+      footer .heart {
+        color: var(--g2);
+      }
+
+      @media (max-width: 640px) {
+        .hero-wave {
+          display: none;
+        }
+        nav .docs {
+          display: none;
+        }
+        .cmd {
+          font-size: 14px;
+          padding: 14px 16px;
+        }
+        .btn {
+          padding: 14px 22px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <header>
+        <a class="logo" href="/"><span class="spark">✳</span> Claude Voice</a>
+        <nav>
+          <a class="docs" href="https://github.com/aayushdebugging/claude-voice#readme">Docs</a>
+          <a href="https://github.com/aayushdebugging/claude-voice">GitHub</a>
+          <a
+            class="star"
+            href="https://github.com/aayushdebugging/claude-voice"
+            aria-label="Star on GitHub"
+            >★ <span>Star</span></a
+          >
+        </nav>
+      </header>
+    </div>
+
+    <main>
+      <div class="hero-wave" id="heroWave" aria-hidden="true"></div>
+      <div class="wrap hero-inner">
+        <div class="badge"><span class="dot">🔊</span> Talk to Claude. In your terminal.</div>
+        <h1><span class="grad">Claude Voice</span> in your CLI</h1>
+        <p class="sub">
+          A CLI tool to talk to Claude using your voice.<br />
+          Hands-free AI assistance, right in your terminal.
+        </p>
+
+        <div class="install">
+          <div class="cmd" id="cmd" title="Click to copy">
+            <span class="dollar">$</span>
+            <span><span class="kw">npm</span> install -g @aayushdebugging/claude-voice</span>
+            <span class="copy" id="copy">Copy</span>
+          </div>
+          <a class="btn" href="https://www.npmjs.com/package/@aayushdebugging/claude-voice"
+            >↓ Install Now</a
+          >
+        </div>
+
+        <div class="feats">
+          <span><span class="ic">🎤</span> Voice In</span>
+          <span><span class="ic">✦</span> Claude AI</span>
+          <span><span class="ic">🔊</span> Voice Out</span>
+          <span><span class="ic">›_</span> Works Anywhere</span>
+        </div>
+
+        <div class="wrap">
+          <div class="term">
+            <div class="bar">
+              <i class="r"></i><i class="y"></i><i class="g"></i>
+              <span class="title">claude-voice</span>
+            </div>
+            <div class="body">
+              <div class="l"><span class="c-green">$</span> claude-voice</div>
+              <div class="l"><span class="c-orange">🎤 Listening…</span></div>
+              <div class="l">
+                <span class="c-violet">❯ You:</span> What are the best practices for handling errors
+                in Node.js?
+              </div>
+              <div class="l">
+                <span class="c-coral">✦ Claude:</span> Great question! Here are some best practices
+                for error handling in Node.js…
+              </div>
+              <div class="twave" id="termWave" aria-hidden="true"></div>
+              <div class="l"><span class="c-muted">Press Ctrl+C to exit</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <footer>
+      Open source <span class="sep">•</span> MIT License <span class="sep">•</span> Built for
+      developers <span class="heart">♥</span>
+    </footer>
+
+    <script>
+      // Build the animated waveforms (hero background + terminal line).
+      function fill(el, count, minH, maxH) {
+        if (!el) return;
+        for (let i = 0; i < count; i++) {
+          const b = document.createElement('span');
+          const h = minH + Math.abs(Math.sin(i * 0.7)) * (maxH - minH) + (i % 3) * 4;
+          b.style.height = Math.round(h) + 'px';
+          b.style.animationDelay = (i * 0.045).toFixed(2) + 's';
+          el.appendChild(b);
+        }
+      }
+      fill(document.getElementById('heroWave'), 90, 14, 150);
+      fill(document.getElementById('termWave'), 60, 4, 20);
+
+      // Click-to-copy the install command.
+      const cmd = document.getElementById('cmd');
+      const copy = document.getElementById('copy');
+      if (cmd) {
+        cmd.addEventListener('click', function () {
+          navigator.clipboard &&
+            navigator.clipboard.writeText('npm install -g @aayushdebugging/claude-voice');
+          if (copy) {
+            copy.textContent = 'Copied!';
+            setTimeout(function () {
+              copy.textContent = 'Copy';
+            }, 1500);
+          }
+        });
+      }
+    </script>
+  </body>
+</html>
