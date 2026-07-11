@@ -27,7 +27,7 @@
     "url": "git+https://github.com/aayushdebugging/claude-voice.git"
   },
   "license": "MIT",
-  "author": "Aayush Kumar (aayushdebugging)",
+  "author": "Aayush Kumar",
   "type": "module",
   "exports": {
     ".": {
