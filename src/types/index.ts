@@ -71,6 +71,12 @@ export interface VoiceConfig {
   sampleRate: number;
   /** Optional name/index of the recording device. */
   device?: string;
+  /**
+   * Working directory the Claude CLI runs in. Defaults to the directory you
+   * launched claude-voice from, so Claude is aware of the project you're working
+   * in. Set this to point Claude at a different project directory instead.
+   */
+  workdir?: string;
   /** Provider-specific overrides. */
   providers: ProviderConfig;
 }

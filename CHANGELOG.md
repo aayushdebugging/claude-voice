@@ -6,6 +6,43 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Added
+
+- **`--workdir` flag / `workdir` config** — set the directory the Claude CLI runs
+  in. Defaults to the directory you launched claude-voice from, so Claude stays
+  aware of the project you're working in.
+
+### Changed
+
+- **The Claude CLI now runs as one persistent process across turns** (streaming-input
+  mode, `--input-format stream-json`), pre-warmed when the session starts. Every
+  turn used to spawn a fresh `claude`, re-paying CLI startup + project-context
+  loading — several seconds — before the first spoken word. That cost is now paid
+  once; follow-up turns begin speaking in about a second. Barge-in kills the
+  process and the next turn resumes the conversation (`--resume`), so continuity
+  is preserved.
+- **More concise spoken answers by default.** The voice prompt steers replies to a
+  few sentences with an offer to go deeper, instead of a multi-minute monologue
+  that keeps reading long after the text is already on screen.
+
+### Fixed
+
+- **Speech no longer stops after a blank line, and handles a missing space after
+  a full stop.** The streaming sentence parser had two boundary bugs: a blank line
+  (paragraph break) pinned the paragraph index and suppressed every later
+  boundary, so everything after the blank was withheld until the end of the reply
+  — heard as the voice going silent after a blank line (and dropped entirely if
+  you barged in during the gap); and a period followed directly by a capital with
+  no space (e.g. `"change it.Let me…"`, common in streamed text) never split.
+  Both are fixed, so replies now stream cleanly through blank lines and run-on or
+  back-to-back sentences.
+- **A single failed TTS synthesis no longer silences the rest of a reply.** The
+  streaming synthesis loop exited on the first error from the TTS provider, so a
+  transient hiccup partway through a long reply (a dropped connection, a server
+  timeout) left everything after it unspoken — heard as the voice "stopping in
+  the middle." Each clause is now retried once and, on repeated failure, skipped
+  while the rest of the reply keeps playing.
+
 ## [0.1.4] - 2026-07-11
 
 ### Security

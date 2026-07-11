@@ -1,15 +1,24 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, afterEach } from 'vitest';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 
-import { ClaudeClient } from '../src/claude/client.js';
+import { ClaudeClient, type ClaudeClientOptions } from '../src/claude/client.js';
 import { createBus, VoiceEvent } from '../src/events/index.js';
 
 const FIXTURE = join(dirname(fileURLToPath(import.meta.url)), 'fixtures', 'fake-claude.mjs');
 
-function makeClient(bus?: ReturnType<typeof createBus>) {
-  return new ClaudeClient({ bin: FIXTURE, bus });
+// The client keeps a persistent CLI process alive across turns, so track every
+// client we spawn and dispose them after each test to avoid leaking processes.
+const clients: ClaudeClient[] = [];
+function makeClient(opts: Partial<ClaudeClientOptions> = {}) {
+  const client = new ClaudeClient({ bin: FIXTURE, ...opts });
+  clients.push(client);
+  return client;
 }
+afterEach(() => {
+  for (const client of clients) client.dispose();
+  clients.length = 0;
+});
 
 describe('ClaudeClient (integration with a fake CLI)', () => {
   it('streams tokens and resolves with the final text', async () => {
@@ -36,7 +45,7 @@ describe('ClaudeClient (integration with a fake CLI)', () => {
     bus.on(VoiceEvent.ClaudeToken, () => seen.push('token'));
     bus.on(VoiceEvent.ClaudeFinished, () => seen.push('finished'));
 
-    await makeClient(bus).ask('go');
+    await makeClient({ bus }).ask('go');
 
     expect(seen[0]).toBe('started');
     expect(seen).toContain('token');
@@ -48,26 +57,24 @@ describe('ClaudeClient (integration with a fake CLI)', () => {
   });
 
   it('disables all tools (safe mode) when tools is an empty array', async () => {
-    const client = new ClaudeClient({ bin: FIXTURE, tools: [] });
+    const client = makeClient({ tools: [] });
     const result = await client.ask('ARGS');
     // `--tools ""` is the CLI's documented "disable all tools".
     expect(result.text).toContain('--tools');
   });
 
   it('does not pass --tools when unrestricted (local sessions keep tools)', async () => {
-    const result = await new ClaudeClient({ bin: FIXTURE }).ask('ARGS');
+    const result = await makeClient().ask('ARGS');
     expect(result.text).not.toContain('--tools');
   });
 
   it('restricts to a named tool list when provided', async () => {
-    const result = await new ClaudeClient({ bin: FIXTURE, tools: ['Read', 'Glob'] }).ask('ARGS');
+    const result = await makeClient({ tools: ['Read', 'Glob'] }).ask('ARGS');
     expect(result.text).toContain('--tools Read,Glob');
   });
 
   it('appends a voice system prompt when set', async () => {
-    const result = await new ClaudeClient({ bin: FIXTURE, appendSystemPrompt: 'BE BRIEF' }).ask(
-      'ARGS',
-    );
+    const result = await makeClient({ appendSystemPrompt: 'BE BRIEF' }).ask('ARGS');
     expect(result.text).toContain('--append-system-prompt');
     expect(result.text).toContain('BE BRIEF');
   });

@@ -46,7 +46,13 @@ export function createSession(options: SessionOptions): Session {
     model: config.model,
     bus,
     appendSystemPrompt: config.voicePrompt || undefined,
+    // Run the CLI in the directory you launched from, so Claude is aware of the
+    // project you're working in. `workdir` points it at a different directory.
+    cwd: config.workdir ?? process.cwd(),
   });
+  // Pre-spawn the CLI now (loading project context) while the user gets ready,
+  // so even the first turn starts speaking quickly instead of paying startup.
+  claude.warmUp();
 
   const deps: ConversationDeps = { config, bus, recorder, stt, claude, speech };
   const conversation = new Conversation(deps);

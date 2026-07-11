@@ -25,6 +25,7 @@ interface GlobalOptions {
   speed?: string;
   local?: boolean;
   device?: string;
+  workdir?: string;
   pushToTalk?: boolean;
   continuous?: boolean;
   speak?: boolean;
@@ -51,6 +52,7 @@ function toOverrides(opts: GlobalOptions): PartialConfig {
     if (Number.isFinite(rate)) overrides.speechRate = rate;
   }
   if (opts.device) overrides.device = opts.device;
+  if (opts.workdir) overrides.workdir = opts.workdir;
   if (opts.pushToTalk) overrides.pushToTalk = true;
   if (opts.continuous) overrides.pushToTalk = false;
   if (opts.speak === false) overrides.autoSpeak = false;
@@ -84,6 +86,10 @@ function withVoiceOptions(command: Command): Command {
     .option('--speed <rate>', 'speech rate multiplier, 0.5–3.0 (1 = natural)')
     .option('--local', 'use the fully-local, free stack (whisper.cpp + Kokoro)')
     .option('--device <device>', 'microphone device name/index')
+    .option(
+      '--workdir <dir>',
+      'project directory Claude works in (default: where you launched claude-voice)',
+    )
     .option('--push-to-talk', 'push-to-talk mode (SPACE to talk) instead of continuous')
     .option('--continuous', 'continuous listening mode (default)')
     .option('--no-speak', 'disable spoken responses (text only)')
