@@ -30,7 +30,6 @@ async function hasBinary(name: string): Promise<boolean> {
   return code === 0;
 }
 
-/** Build the full list of diagnostic checks for the current config. */
 export function buildChecks(config: VoiceConfig): DiagnosticCheck[] {
   const claudeBin = process.env.CLAUDE_VOICE_CLI ?? 'claude';
 

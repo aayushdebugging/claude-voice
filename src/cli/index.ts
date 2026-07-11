@@ -33,7 +33,6 @@ interface GlobalOptions {
   logLevel?: LogLevel;
 }
 
-/** Translate parsed CLI flags into a partial config override. */
 function toOverrides(opts: GlobalOptions): PartialConfig {
   if (opts.logLevel) setLogLevel(opts.logLevel);
   const overrides: PartialConfig = {};
@@ -63,7 +62,6 @@ function toOverrides(opts: GlobalOptions): PartialConfig {
   return overrides;
 }
 
-/** Attach the shared voice options to a command. */
 function withVoiceOptions(command: Command): Command {
   return command
     .option('--model <model>', 'Claude model alias (opus, sonnet, fable)')

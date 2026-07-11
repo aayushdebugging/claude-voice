@@ -49,7 +49,6 @@ export class SpeechQueue {
   private controller: AbortController | null = null;
   private speaking = false;
 
-  // ---- streaming state ----
   private streaming = false;
   private pendingText: string[] = []; // sentences awaiting synthesis
   private readyClips: Buffer[] = []; // synthesized PCM awaiting playback
@@ -96,7 +95,6 @@ export class SpeechQueue {
     return { text, voice: this.voice, speed: this.speed, language: this.language, signal };
   }
 
-  /** Change the voice used for subsequent speech. */
   setVoice(voice?: string): void {
     this.voice = voice;
   }
@@ -106,7 +104,6 @@ export class SpeechQueue {
     this.speed = speed;
   }
 
-  /** Change the output language used for subsequent speech. */
   setLanguage(language?: string): void {
     this.language = language;
   }
@@ -158,8 +155,6 @@ export class SpeechQueue {
       if (this.controller === controller) this.controller = null;
     }
   }
-
-  // ---- Streaming API ------------------------------------------------------
 
   /**
    * Open a streaming session. Push sentences with {@link push} as they're

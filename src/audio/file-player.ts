@@ -72,12 +72,10 @@ export class FilePlayer implements AudioSink {
   private child: ChildProcess | null = null;
   private tmpFile: string | null = null;
 
-  /** Whether a file player is available on this system. */
   static isAvailable(): Promise<boolean> {
     return Promise.resolve(resolvePlayer() !== null);
   }
 
-  /** Name of the resolved player (for diagnostics). */
   static playerName(): string | null {
     return resolvePlayer()?.cmd ?? null;
   }

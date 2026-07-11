@@ -46,7 +46,6 @@ export class SpeakerPlayer implements AudioSink {
   private Speaker: SpeakerModule | null = null;
   private ended = false;
 
-  /** Whether native playback is available on this system. */
   static async isAvailable(): Promise<boolean> {
     return (await loadSpeaker()) !== null;
   }

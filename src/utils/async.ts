@@ -1,5 +1,3 @@
-/** Small async helpers used across the pipeline. */
-
 /** Resolve after `ms` milliseconds. Rejects immediately if `signal` aborts. */
 export function sleep(ms: number, signal?: AbortSignal): Promise<void> {
   return new Promise((resolve, reject) => {

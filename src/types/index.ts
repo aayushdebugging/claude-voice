@@ -6,10 +6,8 @@
  * import cycles.
  */
 
-/** Identifiers for the supported speech-to-text providers. */
 export type SttProviderName = 'groq' | 'openai' | 'whispercpp';
 
-/** Identifiers for the supported text-to-speech providers. */
 export type TtsProviderName = 'elevenlabs' | 'sarvam' | 'kokoro';
 
 /** Claude model aliases accepted by the Claude CLI. */
@@ -154,7 +152,6 @@ export interface SttProvider {
 
 /** Options for a synthesis request. */
 export interface SynthesisOptions {
-  /** Text to speak. */
   text: string;
   /** Named voice to use (overrides config default). */
   voice?: string;

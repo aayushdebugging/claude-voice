@@ -111,7 +111,6 @@ export class StreamingPlayer implements AudioSink {
     return (await resolve()) !== null;
   }
 
-  /** Name of the resolved streaming player (for diagnostics). */
   static async playerName(): Promise<string | null> {
     return (await resolve())?.cmd ?? null;
   }

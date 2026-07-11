@@ -19,7 +19,6 @@ export function needsApiKey(provider: string): provider is CredentialProvider {
   return Object.prototype.hasOwnProperty.call(ENV_KEYS, provider);
 }
 
-/** Return the API key for a provider, or undefined when unset. */
 export function getApiKey(provider: CredentialProvider): string | undefined {
   const value = process.env[ENV_KEYS[provider]];
   return value && value.trim().length > 0 ? value.trim() : undefined;

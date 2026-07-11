@@ -9,7 +9,6 @@ export type { VoiceEventName, VoiceEventMap } from './types.js';
 /** The application-wide event bus type. */
 export type VoiceBus = TypedEventBus<VoiceEventMap>;
 
-/** Create a fresh, typed voice event bus. */
 export function createBus(): VoiceBus {
   return new TypedEventBus<VoiceEventMap>();
 }

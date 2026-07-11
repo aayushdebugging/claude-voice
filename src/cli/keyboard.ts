@@ -18,7 +18,6 @@ import { logger } from '../utils/logger.js';
 export interface KeyHandlers {
   /** SPACE pressed — the Conversation decides what it means for the state. */
   onSpace?: () => void;
-  /** Quit the session. */
   onQuit?: () => void;
 }
 

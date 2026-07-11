@@ -6,9 +6,7 @@
  * is valid everywhere so `/speed` behaves identically regardless of provider.
  */
 
-/** Slowest spoken rate we allow. */
 export const SPEED_MIN = 0.5;
-/** Fastest spoken rate we allow. */
 export const SPEED_MAX = 3.0;
 
 /** Clamp a requested speech rate into the safe range (non-finite → 1). */

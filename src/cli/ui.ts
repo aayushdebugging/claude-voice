@@ -112,7 +112,6 @@ function formatMs(ms: number): string {
   return ms < 1000 ? `${ms}ms` : `${(ms / 1000).toFixed(1)}s`;
 }
 
-/** Print the startup banner (brand-colored). */
 export function printBanner(subtitle: string): void {
   const title = chalk.bold(
     chalk.hex('#f5a623')('Claude ') + chalk.hex('#e8618c')('Voice ') + chalk.hex('#a66cff')('AI'),

@@ -1,5 +1,3 @@
-/** Networking helpers shared by local-server providers. */
-
 /**
  * True if an HTTP server answers at `baseUrl` at all — any HTTP response counts
  * as "up"; only a connection failure (ECONNREFUSED) or timeout counts as down.
