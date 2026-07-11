@@ -6,6 +6,8 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [0.1.5] - 2026-07-11
+
 ### Added
 
 - **`--workdir` flag / `workdir` config** — set the directory the Claude CLI runs
@@ -192,6 +194,7 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - `config`, `doctor`, `update`, `chat`, and `version` commands.
 - Programmatic library API for embedding voice in other tools.
 
-[Unreleased]: https://github.com/aayushdebugging/claude-voice/compare/v0.1.4...HEAD
+[Unreleased]: https://github.com/aayushdebugging/claude-voice/compare/v0.1.5...HEAD
+[0.1.5]: https://github.com/aayushdebugging/claude-voice/compare/v0.1.4...v0.1.5
 [0.1.4]: https://github.com/aayushdebugging/claude-voice/compare/v0.1.0...v0.1.4
 [0.1.0]: https://github.com/aayushdebugging/claude-voice/releases/tag/v0.1.0
